@@ -598,6 +598,7 @@ int CoreAudioAUHAL::OpenAnalog(struct CoreAudioDeviceParameters *deviceParameter
         return false;
     }
 	
+#if 0
     /* Set the device we will use for this output unit */
     err = AudioUnitSetProperty(deviceParameters->au_unit,
 							   kAudioOutputUnitProperty_CurrentDevice,
@@ -836,7 +837,11 @@ int CoreAudioAUHAL::OpenAnalog(struct CoreAudioDeviceParameters *deviceParameter
     //aout_FormatPrepare( &p_aout->output.output );
     //p_aout->output.i_nb_samples = 2048;
     //aout_VolumeSoftInit( p_aout );
+#endif
 	
+  /* AU initiliaze */
+  verify_noerr( AudioUnitInitialize(deviceParameters->au_unit) );
+
     /* set the IOproc callback */
 	input.inputProc = (AURenderCallback) RenderCallbackAnalog;
 	input.inputProcRefCon = NULL;//deviceParameters;
@@ -846,7 +851,7 @@ int CoreAudioAUHAL::OpenAnalog(struct CoreAudioDeviceParameters *deviceParameter
 									   kAudioUnitScope_Global,
 									   0, &input, sizeof(input)));
 	
-    
+#if 0
     /* Set the new_layout as the layout VLC will use to feed the AU unit */
     verify_noerr( AudioUnitSetProperty(deviceParameters->au_unit,
 									   kAudioUnitProperty_AudioChannelLayout,
@@ -855,9 +860,7 @@ int CoreAudioAUHAL::OpenAnalog(struct CoreAudioDeviceParameters *deviceParameter
 	
     if( new_layout.mNumberChannelDescriptions > 0 )
         free( new_layout.mChannelDescriptions );
-	
-    /* AU initiliaze */
-    verify_noerr( AudioUnitInitialize(deviceParameters->au_unit) );
+#endif
 	
     /* Find the difference between device clock and mdate clock */
     deviceParameters->clock_diff = - (mtime_t)
